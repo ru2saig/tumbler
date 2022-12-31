@@ -10,6 +10,10 @@ Tumbler provides plugin interfaces for extending the URI schemes and MIME types
 for which thumbnails can be generated as well as for replacing the storage
 backend that is used to store the thumbnails on disk.
 
+This fork adds thumbnail support for webp files, based of off this [forum thread](https://forum.xfce.org/viewtopic.php?id=8951)
+and this [patch file](https://bugzilla.xfce.org/attachment.cgi?id=6641). The updated patch file made 
+against the latest commit (3e6d8502de745a4e36c715779f71520a12607335) is given [here](https://gist.github.com/ru2saig/574f61db6bf18c73530cab39c58ccf87).
+
 ----
 
 ### Homepage
