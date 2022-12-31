@@ -273,7 +273,27 @@ AM_CONDITIONAL([TUMBLER_COVER_THUMBNAILER], [test x"$ac_tumbler_cover_thumbnaile
 AC_MSG_RESULT([$ac_tumbler_cover_thumbnailer])
 ])
 
+dnl TUMBLER_WEBP_THUMBNAILER()
+dnl
+dnl Check whether to build and install the libwebp thumbnailer plugin.
+dnl
+AC_DEFUN([TUMBLER_WEBP_THUMBNAILER],
+[
+AC_ARG_ENABLE([webp-thumbnailer], [AC_HELP_STRING([--disable-webp-thumbnailer], [Don't build the WEBP image thumbnailer plugin])],
+  [ac_tumbler_webp_thumbnailer=$enableval], [ac_tumbler_webp_thumbnailer=yes])
+if test x"$ac_tumbler_webp_thumbnailer" = x"yes"; then
+  dnl Check for gdk-pixbuf
+  PKG_CHECK_MODULES([GDK_PIXBUF], [gdk-pixbuf-2.0 >= 2.22],
+  [
+    dnl Check for libwebp
+    PKG_CHECK_MODULES([LIBWEBP], [libwebp >= 0.4.3], [], [ac_tumbler_webp_thumbnailer=no])
+  ], [ac_tumbler_webp_thumbnailer=no])
+fi
 
+AC_MSG_CHECKING([whether to build the WEBP image thumbnailer plugin])
+AM_CONDITIONAL([TUMBLER_WEBP_THUMBNAILER], [test x"$ac_tumbler_webp_thumbnailer" = x"yes"])
+AC_MSG_RESULT([$ac_tumbler_webp_thumbnailer])
+])
 
 dnl TUMBLER_XDG_CACHE()
 dnl

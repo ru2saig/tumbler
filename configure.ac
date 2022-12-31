@@ -185,6 +185,7 @@ TUMBLER_ODF_THUMBNAILER()
 TUMBLER_POPPLER_THUMBNAILER()
 TUMBLER_RAW_THUMBNAILER()
 TUMBLER_XDG_CACHE()
+TUMBLER_WEBP_THUMBNAILER()
 TUMBLER_DESKTOP_THUMBNAILER()
 TUMBLER_GEPUB_THUMBNAILER()
 
@@ -223,6 +224,7 @@ plugins/odf-thumbnailer/Makefile
 plugins/poppler-thumbnailer/Makefile
 plugins/raw-thumbnailer/Makefile
 plugins/xdg-cache/Makefile
+plugins/webp-thumbnailer/Makefile
 plugins/desktop-thumbnailer/Makefile
 plugins/gepub-thumbnailer/Makefile
 po/Makefile.in
@@ -292,6 +294,11 @@ if test x"$ac_tumbler_xdg_cache" = x"yes"; then
 echo "  * Freedesktop.org cache plugin:                     yes"
 else
 echo "  * Freedesktop.org cache plugin:                     no"
+fi
+if test x"$ac_tumbler_webp_thumbnailer" = x"yes"; then
+echo "  * WEBP thumbnailer plugin using libwebp:            yes"
+else
+echo "  * WEBP thumbnailer plugin using libwebp:             no"
 fi
 if test x"$ac_tumbler_desktop_thumbnailer" = x"yes"; then
 echo "  * Loading thumbnailers from .thumbnailer files:     yes"
