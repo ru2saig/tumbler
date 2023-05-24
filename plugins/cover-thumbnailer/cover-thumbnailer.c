@@ -33,7 +33,6 @@
 #include <glib-object.h>
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
-#include <tumbler/tumbler.h>
 #include <curl/curl.h>
 
 #include <cover-thumbnailer/cover-thumbnailer.h>
@@ -57,11 +56,6 @@ static void cover_thumbnailer_create       (TumblerAbstractThumbnailer *thumbnai
                                             TumblerFileInfo            *info);
 
 
-
-struct _CoverThumbnailerClass
-{
-  TumblerAbstractThumbnailerClass __parent__;
-};
 
 struct _CoverThumbnailer
 {
@@ -224,7 +218,7 @@ cover_thumbnailer_load_prepare (CoverThumbnailer *cover,
 
   g_return_val_if_fail (g_str_has_prefix (url, "http://"), NULL);
   g_return_val_if_fail (G_IS_CANCELLABLE (cancellable), NULL);
-  g_return_val_if_fail (IS_COVER_THUMBNAILER (cover), NULL);
+  g_return_val_if_fail (COVER_IS_THUMBNAILER (cover), NULL);
 
   /* curl downloader */
   curl_handle = curl_easy_init ();
@@ -238,7 +232,7 @@ cover_thumbnailer_load_prepare (CoverThumbnailer *cover,
 #endif
 
   /* cancellable check */
-  curl_easy_setopt (curl_handle, CURLOPT_PROGRESSFUNCTION, cover_thumbnailer_check_progress);
+  curl_easy_setopt (curl_handle, CURLOPT_XFERINFOFUNCTION, cover_thumbnailer_check_progress);
   curl_easy_setopt (curl_handle, CURLOPT_PROGRESSDATA, cancellable);
   curl_easy_setopt (curl_handle, CURLOPT_NOPROGRESS, FALSE);
 
@@ -399,7 +393,7 @@ cover_thumbnailer_get_title (CoverThumbnailer  *cover,
 {
   gchar       *basename;
   gboolean     is_series;
-  GMatchInfo  *match_info;
+  GMatchInfo  *match_info = NULL;
   gint         start_pos;
   gint         end_pos;
   gchar       *year = NULL;
@@ -418,7 +412,7 @@ cover_thumbnailer_get_title (CoverThumbnailer  *cover,
   basename = g_file_get_basename (gfile);
 
   /* check if the title looks like a serie */
-  is_series = g_regex_match (cover->series_regex, basename, 0, &match_info);
+  is_series = g_regex_match (cover->series_regex, basename, 0, NULL);
 
   /* if this is not a serie, look for other filename crap */
   if (is_series
@@ -428,8 +422,9 @@ cover_thumbnailer_get_title (CoverThumbnailer  *cover,
       if (g_match_info_fetch_pos (match_info, 0, &start_pos, NULL)
           && start_pos > 0)
         basename[start_pos] = '\0';
-      g_match_info_free (match_info);
     }
+  g_match_info_free (match_info);
+  match_info = NULL;
 
   /* for non-series, look for a year in the title */
   if (!is_series
@@ -453,8 +448,9 @@ cover_thumbnailer_get_title (CoverThumbnailer  *cover,
               basename[start_pos] = '\0';
             }
         }
-      g_match_info_free (match_info);
     }
+  g_match_info_free (match_info);
+  match_info = NULL;
 
   /* append the possible title part of the filename */
   title = g_string_sized_new (strlen (basename));
@@ -509,7 +505,7 @@ cover_thumbnailer_poster_url (CoverThumbnailer        *cover,
   gint         dest_size;
 
   g_return_val_if_fail (TUMBLER_IS_THUMBNAIL_FLAVOR (flavor), NULL);
-  g_return_val_if_fail (IS_COVER_THUMBNAILER (cover), NULL);
+  g_return_val_if_fail (COVER_IS_THUMBNAILER (cover), NULL);
 
   if (G_LIKELY (cover->api_key == NULL))
     {
